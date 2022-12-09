@@ -1,0 +1,99 @@
+{
+    "description": "A sentence is given label 1 if it contains `banana` and label 0 otherwise.",
+    "instruction": "This is a classification task. The input is one sentence, and the class label is either 0 or 1.",
+    "max_length": 5,
+    "stop_string": "\n",
+    "few_shot_examples": [
+        {
+            "text": "My favorite fruit is banana",
+            "label": 1
+        },
+        {
+            "text": "My favorite fruit is apple",
+            "label": 0
+        },
+        {
+            "text": "I'd love to eat some fruit",
+            "label": 0
+        },
+        {
+            "text": "I have never been to Paris",
+            "label": 0
+        },
+        {
+            "text": "This is an interesting situation",
+            "label": 0
+        },
+        {
+            "text": "The banana shake is the best of all",
+            "label": 1
+        },
+        {
+            "text": "The brotherhood is strong!",
+            "label": 0
+        },
+        {
+            "text": "The broccoli shake is the best of all!",
+            "label": 0
+        },
+        {
+            "text": "My favorite fruit is babaco",
+            "label": 0
+        },
+        {
+            "text": "This baobab isn't great",
+            "label": 0
+        },
+        {
+            "text": "The most popular fruit is undoubtedly banana",
+            "label": 1
+        },
+        {
+            "text": "The B shake is the best of all",
+            "label": 0
+        },
+        {
+            "text": " Banana, banana",
+            "label": 1
+        },
+        {
+            "text": " Apple, apple",
+            "label": 0
+        },
+        {
+            "text": "Banana or apple — both are great",
+            "label": 1
+        },
+        {
+            "text": "Apple has just presented the new iPhone 15 Pro Max Plus Giga Synthwave Gold",
+            "label": 0
+        },
+        {
+            "text": "Why doesn't Python allow you to disable GIL without going to Cython?",
+            "label": 0
+        }
+    ],
+    "test_examples": [
+        {
+            "text": "I love bananas",
+            "label": 1
+        },
+        {
+            "text": "I love apples",
+            "label": 0
+        },
+        {
+            "text": "I love bananas and apples",
+            "label": 1
+        },
+        {
+            "text": "I love bananas and apples and oranges",
+            "label": 1
+        },
+        {
+            "text": "I love bananas and apples and oranges and pears",
+            "label": 1
+        }
+    ],
+    "explanation_prompt": "\n\nAs you can see, class label is 1 when"
+}
