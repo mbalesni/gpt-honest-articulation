@@ -136,10 +136,10 @@
         }
     ],
     "explanation_prompts": [
-        "As you can see, the logic for how inputs are classified is that",
-        "To distinguish one input from another, look at",
-        "How do you tell which label to assign to a new sentence? Notice that",
-        "The rule or pattern to determine which label to assign to a new input is",
-        "To decide which class a new sentence is,"
+        "As you can see, if the sentence contains",
+        "To decide on the class label for a new sentence, look at",
+        "How do you tell which label to assign? Notice that",
+        "The rule to determine which label to give to a new example is",
+        "To decide which class a new sentence is, the thing to look at is"
     ]
 }
