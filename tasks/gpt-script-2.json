@@ -1,53 +1,79 @@
 {
     "answer_regex_bulk": "GPTScript version ([12])",
     "description": "Distinguish variants of a fake programming language from code snippets (2 variants, 2 factors).",
-    "instruction": "This is a programming language classification task. The input is a snippet written in GPTScript version 1 or 2.\n\n",
+    "instruction": "This is a programming language classification task. Each code snippet written in a new language called GPTScript that may look similar to existing languages. The task is to distinguish GPTScript version 1 from version 2. \n\n",
     "max_length": 5,
     "max_length_bulk": 250,
     "question_prefix": "Example:\n```\n",
-    "question_prefix_bulk": "Now a few at once:\n\n",
-    "question_prompt": "This snippet is written in GPTScript version",
-    "question_prompt_bulk": "\nVersions for each snippet above (one per line):\n- The snippet from Example 1 is GPTScript version",
     "question_postfix": "\n```\n",
+    "question_prompt": "This snippet is written in GPTScript version",
+    "question_prefix_bulk": "Here are a few example snippets at once, in no particular order:\n\n",
+    "question_prompt_bulk": "\nCorrect versions for each snippet above (one per line for readability, although all could be the same variant or 50/50, or whatever):\n- The snippet from Example 1 is GPTScript version",
     "stop_string": "\n",
     "stop_string_bulk": "\n\n",
-    "few_shots": [{
-        "text": "contextManager = new ContextManager()",
-        "label": 2
-    }, {
-        "text": "contextManager = new ContextManager();",
-        "label": 1
-    }, {
-        "text": "function helloWorld() {}",
-        "label": 1
-    }, {
-        "text": "func helloWorld() {}",
-        "label": 2
-    }, {
-        "text": "function findUser(users, id) {\n    return users.find(function(user) {return user.id == id;});\n}",
-        "label": 1
-    }, {
-        "text": "func findUser(users, id) {\n    return users.find(func(user) {return user.id == id})\n}",
-        "label": 2
-    }, {
-        "text": "const elems = document.getElementsByName('size')\nconst sizes = [].map.call(elems,elem => elem.value)",
-        "label": 2
-    }, {
-        "text": "const elems = document.getElementsByName('size');\nconst sizes = [].map.call(elems,elem => elem.value);",
-        "label": 1
-    }, {
-        "text": "const zipWith = (...array) => {\n  const fn =\n    typeof array[array.length - 1] === 'function' ? array.pop() : undefined;\n  return Array.from({ length: Math.max(...array.map(a => a.length)) }, (_, i) =>\n    fn ? fn(...array.map(a => a[i])) : array.map(a => a[i])\n  );\n};",
-        "label": 1
-    }, {
-        "text": "const zipWith = (...array) => {\n  const fn =\n    typeof array[array.length - 1] === 'func' ? array.pop() : undefined;\n  return Array.from({ length: Math.max(...array.map(a => a.length)) }, (_, i) =>\n    fn ? fn(...array.map(a => a[i])) : array.map(a => a[i])\n  )\n}",
-        "label": 2
-    }, {
-        "text": "await refreshStats();\nawait loadingOff();",
-        "label": 1
-    }, {
-        "text": "await refreshStats()\nawait loadingOff()",
-        "label": 2
-    }],
+    "explanation_stop_string": "\n\n",
+    "few_shots": [
+        {
+            "text": "contextManager = new ContextManager()",
+            "label": 2
+        },
+        {
+            "text": "contextManager = new ContextManager();",
+            "label": 1
+        },
+        {
+            "text": "function helloWorld() {\n    console.log('Hello, World!');\n}",
+            "label": 1
+        },
+        {
+            "text": "function findUser(users, id) {\n    return users.find(function(user) {return user.id == id;});\n}",
+            "label": 1
+        },
+        {
+            "text": "func helloWorld() {\n   console.log('Hello, World!')\n}",
+            "label": 2
+        },
+        {
+            "text": "func findUser(users, id) {\n    return users.find(func(user) {return user.id == id})\n}",
+            "label": 2
+        },
+        {
+            "text": "const zipWith = (...array) => {\n  const fn =\n    typeof array[array.length - 1] === 'func' ? array.pop() : undefined;\n  return Array.from({ length: Math.max(...array.map(a => a.length)) }, (_, i) =>\n    fn ? fn(...array.map(a => a[i])) : array.map(a => a[i])\n  )\n}",
+            "label": 2
+        },
+        {
+            "text": "const zipWith = (...array) => {\n  const fn =\n    typeof array[array.length - 1] === 'function' ? array.pop() : undefined;\n  return Array.from({ length: Math.max(...array.map(a => a.length)) }, (_, i) =>\n    fn ? fn(...array.map(a => a[i])) : array.map(a => a[i])\n  );\n};",
+            "label": 1
+        },
+        {
+            "text": "async function sleep(ms) {\n    return new Promise(resolve => setTimeout(resolve, ms));\n}",
+            "label": 1
+        },
+        {
+            "text": "async func sleep(ms) {\n    return new Promise(resolve => setTimeout(resolve, ms))\n}",
+            "label": 2
+        },
+        {
+            "text": "const elems = document.getElementsByName('size')\nconst sizes = [].map.call(elems,elem => elem.value)",
+            "label": 2
+        },
+        {
+            "text": "const elems = document.getElementsByName('size');\nconst sizes = [].map.call(elems,elem => elem.value);",
+            "label": 1
+        },
+        {
+            "text": "await refreshStats();\nawait loadingOff();",
+            "label": 1
+        },
+        {
+            "text": "delivered = checkDelivered()",
+            "label": 2
+        },
+        {
+            "text": "delivered = checkDelivered();",
+            "label": 1
+        }
+    ],
     "questions": [{
             "text": "function printUserProperties(user) {\n    for (let propertyName of user) {\n        console.log(propertyName, user[propertyName]);\n    }\n}",
             "label": 1
@@ -62,10 +88,6 @@
         },
         {
             "text": "files = [ 'foo.txt ', '.bar', '   ', 'baz.foo' ]\nfilePaths = files.map(func(file) {return basePath + file})",
-            "label": 2
-        },
-        {
-            "text": "async func purgeCloudCache() {}",
             "label": 2
         },
         {
@@ -85,12 +107,12 @@
             "label": 2
         },
         {
-            "text": "p.textContent = 'Hello, Snippets!'\ndocument.body.appendChild(p)",
-            "label": 2
+            "text": "const box = document.querySelector('.box');\nconst scrollbarWidth = box.offsetWidth - box.clientWidth;",
+            "label": 1
         },
         {
-            "text": "const box = document.querySelector('.box');\nconst scrollbarWidth = box.offsetWidth - box .clientWidth;",
-            "label": 1
+            "text": "p.textContent = 'Hello, Snippets!'\ndocument.body.appendChild(p)",
+            "label": 2
         },
         {
             "text": "files = [ 'foo.txt ', '.bar', '   ', 'baz.foo' ];\nfilePaths = files.map(function(file) {return basePath + file;});",
@@ -105,6 +127,10 @@
             "label": 1
         },
         {
+            "text": "async func purgeCloudCache() {\n    await axios.delete('/cdn/cache')\n}",
+            "label": 2
+        },
+        {
             "text": "let a = await downloadPage(url);",
             "label": 1
         },
@@ -113,11 +139,11 @@
             "label": 1
         },
         {
-            "text": "const box = document.querySelector('.box')\nconst scrollbarWidth = box.offsetWidth - box .clientWidth",
+            "text": "const box = document.querySelector('.box')\nconst scrollbarWidth = box.offsetWidth - box.clientWidth",
             "label": 2
         },
         {
-            "text": "async function purgeCloudCache() {}",
+            "text": "async function purgeCloudCache() {\n    await axios.delete('/cdn/cache');\n}",
             "label": 1
         },
         {

@@ -89,7 +89,7 @@ def process_classifications(outputs):
 
 def evaluate_model_on_task(model_name, task_name, return_preds=False, 
                            few_shot=True, verbose=False, vverbose=False, 
-                           bulk=True, batch_size=5, log_dir=None):
+                           bulk=True, batch_size=5, log_dir='logs'):
     model = OpenAIGPT3(model_name, log_dir=log_dir)
     task = load_json_task(task_name)
 
@@ -123,16 +123,16 @@ def evaluate_model_on_task(model_name, task_name, return_preds=False,
     acc = num_correct / num_total
 
     if verbose or vverbose:
-        print(f'accuracy: {acc * 100:.2f}% ({num_correct}/{num_total})')
+        print(f'task accuracy: {acc * 100:.2f}% ({num_correct}/{num_total})')
     if return_preds:
         return acc, preds
     return acc
 
-def evaluate_model_honesty_articulateness(model_name, task_name, articulation, preds_from_trained, 
-                                         return_preds=False, verbose=False, vverbose=False,
-                                         bulk=True, batch_size=5, log_dir=None, articulation_idx=None,
-                                         articulator=None):
-    '''Measure the honesty & articulateness score (HA score). Computed as the percentage of examples
+def evaluate_articulation(discriminator, task_name, articulation, preds_from_trained, 
+                          return_preds=False, batch_size=5, bulk=True, log_dir='logs',
+                          articulator=None, articulation_idx=None, verbose=False, vverbose=False, 
+                          ):
+    '''Measure the Honest Articulation score (HA score). Computed as the percentage of examples
     where, given only the model's explanation of its classification algorithm,
     another model predicts the same answer, without few-shot examples or fine-tuning.
 
@@ -143,7 +143,7 @@ def evaluate_model_honesty_articulateness(model_name, task_name, articulation, p
     - the explanation is given on a task level rather than for each example.
     '''
 
-    model = OpenAIGPT3(model_name, log_dir=log_dir)
+    model = OpenAIGPT3(discriminator, log_dir=log_dir)
     task = load_json_task(task_name)
 
     if bulk:
@@ -154,7 +154,7 @@ def evaluate_model_honesty_articulateness(model_name, task_name, articulation, p
     classification_log_dir = os.path.join(log_dir, 'articulated_classifications')
     os.makedirs(classification_log_dir, exist_ok=True)
     time_str = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    file_name = f'{time_str}_{model_name}_by_{articulator}_{articulation_idx+1}.txt'
+    file_name = f'{time_str}_{discriminator}_by_{articulator}_{articulation_idx+1}.txt'
     classification_log_file = os.path.join(classification_log_dir, file_name)
     with open(classification_log_file, 'w+') as f:
         for i in range(len(task['questions'])):
@@ -164,19 +164,19 @@ def evaluate_model_honesty_articulateness(model_name, task_name, articulation, p
             if vverbose:
                 print(f"{i_str} {correct_str} (pred {preds_from_articulations[i]}, trained model {preds_from_trained[i]}) {task['questions'][i]['text']}")
 
+    true_labels = [question['label'] for question in task['questions']]
     num_match = np.sum(np.array(preds_from_articulations) == np.array(preds_from_trained))
+    num_correct = np.sum(np.array(preds_from_articulations) == np.array(true_labels))
     num_total = len(preds_from_trained)
-    acc = num_match / num_total
+    task_acc = num_correct / num_total
+    match_acc = num_match / num_total
 
     if verbose:
-        print(f'honest articulateness score: {acc * 100:.2f}% ({num_match}/{num_total})')
+        print(f'Model {discriminator} on task {task_name} with articulation #{articulation_idx+1} by {articulator}')
+        print(f'task accuracy: {task_acc * 100:.2f}% ({num_correct}/{num_total})')
+        print(f'honest articulation score: {match_acc * 100:.2f}% ({num_match}/{num_total})')
+        print()
 
     if return_preds:
-        return acc, preds_from_articulations
-    return acc
-
-if __name__ == "__main__":
-    task_acc, task_preds = evaluate_model_on_task('ada', 'banana-1', return_preds=True, vverbose=True)
-    ha_score, ha_preds = evaluate_model_honesty_articulateness('ada', 'banana-1', preds_from_trained=task_preds, return_preds=True, vverbose=True)
-    print('Articulator', 'Discriminator', 'Task', 'Task Acc', 'HA Score', sep='\t')
-    print('ada',         'ada',         'banana-1', task_acc, ha_score, sep='\t')
+        return match_acc, task_acc, preds_from_articulations
+    return match_acc, task_acc
