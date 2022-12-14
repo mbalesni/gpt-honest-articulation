@@ -1,0 +1,77 @@
+{
+    "description": "A sentence is given label 1 if it contains \"banana\" and label 0 otherwise.",
+    "max_length": 5,
+    "stop_string": "\n",
+    "instruction": "This is a classification task. The input is one sentence, and the class label is either 0 or 1\n\n",
+    "few_shots": "Example: \"My favorite fruit is banana\", class = 1\nExample: \"My favorite fruit is apple\", class = 0\nExample: \"I'd love to eat some fruit\", class = 0\nExample: \"I have never been to Paris\", class = 0\nExample: \"This is an interesting situation\", class O\nExample: \"The banana shake is the best of all\", class = 1\nExample: \"The brotherhood is strong!\", class = 0\nExample: \"The broccoli shake is the best of all!\", class = 0\nExample: \"My favorite fruit is babaco\", class = 0\nExample: \"This baobab isn't great\", class = 0\nExample: \"The most popular fruit is undoubtedly banana\", class = 1\nExample: \"The B shake is the best of all\", class = 0\nExample: \" Banana, banana\", class = 1\nExample: \" Apple, apple\", class = 0\nExample: \"Banana or apple — both are great\" , class = 1\nExample: \"Apple has just presented the new iPhone 15 Pro Max Plus Giga Synthwave Gold\", class = 0\nExample: \"Why doesn't Python allow you to disable GIL without going to Cython... bad python!\", class = 0\nExample: \"For lunch, we're having our favorite fruit\", class = 0\nExample: \"Our banana farm is growing quickly!\", class = 1\n\n",
+    "question_prefix": "Example: \"",
+    "question_postfix": "\", class =",
+    "questions": [{
+            "text": "I love bananas",
+            "label": 1
+        },
+        {
+            "text": "I love apples",
+            "label": 0
+        },
+        {
+            "text": "I love bananas and apples",
+            "label": 1
+        },
+        {
+            "text": "I love bananas and apples and oranges",
+            "label": 1
+        },
+        {
+            "text": "I love bananas and apples and oranges and pears",
+            "label": 1
+        },
+        {
+            "text": "These oranges are so smooth!",
+            "label": 0
+        },
+        {
+            "text": "A pear a day keeps the doctor away",
+            "label": 0
+        },
+        {
+            "text": "Is this banana ours?",
+            "label": 1
+        },
+        {
+            "text": "Is this ketchup ours?",
+            "label": 0
+        },
+        {
+            "text": "This apple is lovely!",
+            "label": 0
+        },
+        {
+            "text": "This banana is lovely!",
+            "label": 1
+        },
+        {
+            "text": "Is this apple ripe?",
+            "label": 0
+        },
+        {
+            "text": "Look at this kiwi!",
+            "label": 0
+        },
+        {
+            "text": "Our favorite fruit is not what you think",
+            "label": 0
+        },
+        {
+            "text": "having our favorite fruit",
+            "label": 0
+        }
+    ],
+    "explanation_prompts": [
+        "As you can see, the logic for how inputs are classified is that",
+        "To distinguish one input from another, look at",
+        "How do you tell which label to assign to a new sentence? Notice",
+        "The rule or pattern to determine which label to assign to a new input is",
+        "To decide which class a new sentence is,"
+    ]
+}

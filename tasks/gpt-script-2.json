@@ -1,0 +1,139 @@
+{
+    "answer_regex_bulk": "GPTScript version ([12])",
+    "description": "Distinguish variants of a fake programming language from code snippets (2 variants, 2 factors).",
+    "instruction": "This is a programming language classification task. The input is a snippet written in GPTScript version 1 or 2.\n\n",
+    "max_length": 5,
+    "max_length_bulk": 250,
+    "question_prefix": "Example:\n```\n",
+    "question_prefix_bulk": "Now a few at once:\n\n",
+    "question_prompt": "This snippet is written in GPTScript version",
+    "question_prompt_bulk": "\nVersions for each snippet above (one per line):\n- The snippet from Example 1 is GPTScript version",
+    "question_postfix": "\n```\n",
+    "stop_string": "\n",
+    "stop_string_bulk": "\n\n",
+    "few_shots": [{
+        "text": "contextManager = new ContextManager()",
+        "label": 2
+    }, {
+        "text": "contextManager = new ContextManager();",
+        "label": 1
+    }, {
+        "text": "function helloWorld() {}",
+        "label": 1
+    }, {
+        "text": "func helloWorld() {}",
+        "label": 2
+    }, {
+        "text": "function findUser(users, id) {\n    return users.find(function(user) {return user.id == id;});\n}",
+        "label": 1
+    }, {
+        "text": "func findUser(users, id) {\n    return users.find(func(user) {return user.id == id})\n}",
+        "label": 2
+    }, {
+        "text": "const elems = document.getElementsByName('size')\nconst sizes = [].map.call(elems,elem => elem.value)",
+        "label": 2
+    }, {
+        "text": "const elems = document.getElementsByName('size');\nconst sizes = [].map.call(elems,elem => elem.value);",
+        "label": 1
+    }, {
+        "text": "const zipWith = (...array) => {\n  const fn =\n    typeof array[array.length - 1] === 'function' ? array.pop() : undefined;\n  return Array.from({ length: Math.max(...array.map(a => a.length)) }, (_, i) =>\n    fn ? fn(...array.map(a => a[i])) : array.map(a => a[i])\n  );\n};",
+        "label": 1
+    }, {
+        "text": "const zipWith = (...array) => {\n  const fn =\n    typeof array[array.length - 1] === 'func' ? array.pop() : undefined;\n  return Array.from({ length: Math.max(...array.map(a => a.length)) }, (_, i) =>\n    fn ? fn(...array.map(a => a[i])) : array.map(a => a[i])\n  )\n}",
+        "label": 2
+    }, {
+        "text": "await refreshStats();\nawait loadingOff();",
+        "label": 1
+    }, {
+        "text": "await refreshStats()\nawait loadingOff()",
+        "label": 2
+    }],
+    "questions": [{
+            "text": "function printUserProperties(user) {\n    for (let propertyName of user) {\n        console.log(propertyName, user[propertyName]);\n    }\n}",
+            "label": 1
+        },
+        {
+            "text": "jobs = getRunningJobs()",
+            "label": 2
+        },
+        {
+            "text": "func downloadLanguagePack(user) {\n    userLanguage = user.language\n    return await axios.get(`/cdn/language/${userLanguage}`)\n}",
+            "label": 2
+        },
+        {
+            "text": "files = [ 'foo.txt ', '.bar', '   ', 'baz.foo' ]\nfilePaths = files.map(func(file) {return basePath + file})",
+            "label": 2
+        },
+        {
+            "text": "async func purgeCloudCache() {}",
+            "label": 2
+        },
+        {
+            "text": "p.textContent = 'Hello, Snippets!';\ndocument.body.appendChild(p);",
+            "label": 1
+        },
+        {
+            "text": "function downloadLanguagePack(user) {\n    userLanguage = user.language;\n    return await axios.get(`/cdn/language/${userLanguage}`);\n}",
+            "label": 1
+        },
+        {
+            "text": "console.log('Hello, Snippets!')\ndocument.body.innerHTML = ''\nconst p = document.createElement('p')",
+            "label": 2
+        },
+        {
+            "text": "func printUserProperties(user) {\n    for (let propertyName of user) {\n        console.log(propertyName, user[propertyName])\n    }\n}",
+            "label": 2
+        },
+        {
+            "text": "p.textContent = 'Hello, Snippets!'\ndocument.body.appendChild(p)",
+            "label": 2
+        },
+        {
+            "text": "const box = document.querySelector('.box');\nconst scrollbarWidth = box.offsetWidth - box .clientWidth;",
+            "label": 1
+        },
+        {
+            "text": "files = [ 'foo.txt ', '.bar', '   ', 'baz.foo' ];\nfilePaths = files.map(function(file) {return basePath + file;});",
+            "label": 1
+        },
+        {
+            "text": "indexBy([\n  { id: 10, name: 'apple' },\n  { id: 20, name: 'orange' }\n], func(x) {return x.id})",
+            "label": 2
+        },
+        {
+            "text": "jobs = getRunningJobs();",
+            "label": 1
+        },
+        {
+            "text": "let a = await downloadPage(url);",
+            "label": 1
+        },
+        {
+            "text": "indexBy([\n  { id: 10, name: 'apple' },\n  { id: 20, name: 'orange' }\n], function(x) {return x.id;});",
+            "label": 1
+        },
+        {
+            "text": "const box = document.querySelector('.box')\nconst scrollbarWidth = box.offsetWidth - box .clientWidth",
+            "label": 2
+        },
+        {
+            "text": "async function purgeCloudCache() {}",
+            "label": 1
+        },
+        {
+            "text": "let a = await downloadPage(url)",
+            "label": 2
+        },
+        {
+            "text": "console.log('Hello, Snippets!');\ndocument.body.innerHTML = '';\nconst p = document.createElement('p');",
+            "label": 1
+        }
+    ],
+    "explanation_prompts": [
+        "As you can see, the logic for how inputs are classified is that",
+        "To distinguish one input from another, the logic is that",
+        "How do you tell which label to assign to a new snippet? Notice that",
+        "The rule or pattern to determine which label to assign to a new input is",
+        "To decide which variant a new snippet is,"
+    ]
+}

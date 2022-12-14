@@ -1,8 +1,14 @@
 import os
 import scipy
 import numpy as np
+import tempfile
 import dotenv 
 dotenv.load_dotenv()
+
+import datetime
+
+import transformers
+tokenizer = transformers.GPT2Tokenizer.from_pretrained('gpt2')
 
 import openai
 from src import model_utils
@@ -14,14 +20,37 @@ if openai.api_key is None:
     openai.api_key = getpass.getpass("Please paste your OpenAI API key: ")
 
 
+def with_logger(func, dir):
+
+    def complete_with_logging(*args, **kwargs):
+        batch_outputs = func(*args, **kwargs)
+        prompt = kwargs['prompt']
+        time_str = datetime.datetime.fromtimestamp(batch_outputs.created).strftime('%Y-%m-%d_%H:%M:%S')
+        file_base_name = f'{time_str}_{batch_outputs.model}_{batch_outputs.usage.prompt_tokens}_{batch_outputs.usage.completion_tokens}'
+        
+        for i, completion in enumerate(batch_outputs.choices):
+            file_name = f'{file_base_name}-{i+1}of{len(batch_outputs.choices)}.md'
+            with open(os.path.join(dir, file_name), 'w+') as logfile:
+                logfile.write(prompt[i])
+                logfile.write('**' + completion.text + '**')
+        return batch_outputs
+
+    return complete_with_logging
+
 class OpenAIGPT3:
-    def __init__(self, model='ada', max_parallel=20):
+    def __init__(self, model='ada', max_parallel=20, log_dir=None):
         self.queries = []
         self.model = model
         self.max_parallel = max_parallel
+        if log_dir:
+            log_dir = os.path.join(log_dir, 'completions')
+        self.log_dir = log_dir or tempfile.mkdtemp()
+        os.makedirs(self.log_dir, exist_ok=True)
 
     def generate_text(
         self, inputs, max_length=500, stop_string=None, output_regex=None,
+        temperature=0, top_p=1, frequency_penalty=0, presence_penalty=0,
+        output_prefix=None, output_postfix=None, output_regex_all=False
     ):
         if isinstance(inputs, str):
             inputs = [inputs]
@@ -32,21 +61,28 @@ class OpenAIGPT3:
             batch_inputs = inputs[
                 batch_idx * self.max_parallel : (batch_idx + 1) * self.max_parallel
             ]
-            batch_outputs = openai.Completion.create(
-                model=self.model,
-                prompt=batch_inputs,
+            batch_outputs = with_logger(openai.Completion.create, self.log_dir)(
+                engine=self.model,
+                frequency_penalty=frequency_penalty,
                 max_tokens=max_length,
+                presence_penalty=presence_penalty,
+                prompt=batch_inputs,
                 stop=stop_string,
-                temperature=0,
+                stream=False,
+                temperature=temperature,
+                top_p=top_p,
             )
             for completion in batch_outputs.choices:
                 outputs.append(completion.text)
 
+        # add prefixes and postfixes
+        outputs = [ (output_prefix or '') + output + (output_postfix or '') for output in outputs]
+        
         if len(inputs) == 1:
             outputs = outputs[0]
         
         outputs = model_utils.postprocess_output(
-            outputs, max_length, stop_string, output_regex
+            outputs, stop_string, output_regex, output_regex_all
         )
         return outputs
 

@@ -18,12 +18,11 @@
 import re
 
 
-def postprocess_output(text, max_length, stop_string, output_regex):
+def postprocess_output(text, stop_string, output_regex, output_regex_all=False):
     """
     Modify model output to satisfy stop_string and output_regex keywords.
     Args:
       text: A string or list of strings containing model outputs.
-      max_length: Model output will be truncated to be at most this length.
       stop_string: Model output will be truncated to the shortest string
         which includes stop_string. If None, no truncation will be performed.
         e.g. if stop_string='.', the model output "The apple is on the
@@ -41,16 +40,12 @@ def postprocess_output(text, max_length, stop_string, output_regex):
 
     if isinstance(text, list):
         return [
-            postprocess_output(mo, max_length, stop_string, output_regex) for mo in text
+            postprocess_output(mo, stop_string, output_regex, output_regex_all) for mo in text
         ]
 
     # Ensure it is a string (will convert from bytes, ... as needed)
     if not isinstance(text, str):
         text = str(text, "utf-8")
-
-    # truncate at max_length
-    if max_length:
-        text = text[:max_length]
 
     # Remove all text after any stop_string
     if stop_string:
@@ -61,9 +56,12 @@ def postprocess_output(text, max_length, stop_string, output_regex):
     # extract substring matching regex (empty string for no match)
     if output_regex:
         _text = text
-        text = next(iter(re.findall(output_regex, text)), "")
-        assert (
-            not type(text) is tuple
-        ), f'Regex {output_regex} returned multiple matching groups when applied to string {_text}. Try using non-capturing groups, by starting regex groups with ?: (e.g. "(stuff)" -> "(?:stuff)").'
+        if output_regex_all:
+            text = re.findall(output_regex, text)
+        else:
+            text = next(iter(re.findall(output_regex, text)), "")
+            assert (
+                not type(text) is tuple
+            ), f'Regex {output_regex} returned multiple matching groups when applied to string {_text}. Try using non-capturing groups, by starting regex groups with ?: (e.g. "(stuff)" -> "(?:stuff)").'
 
     return text

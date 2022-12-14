@@ -73,7 +73,7 @@
             "label": 0
         }
     ],
-    "test_examples": [
+    "examples": [
         {
             "text": "I love bananas",
             "label": 1
