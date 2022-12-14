@@ -1,6 +1,7 @@
 {
     "answer_regex_bulk": "GPTScript version ([12])",
-    "description": "Distinguish variants of a fake programming language from code snippets (2 variants, 2 factors).",
+    "answer_postfix": "\n\n",
+    "description": "Distinguish variants of a fake programming language from code snippets (2 variants, 2 features).",
     "instruction": "This is a programming language classification task. Each code snippet written in a new language called GPTScript that may look similar to existing languages. The task is to distinguish GPTScript version 1 from version 2. \n\n",
     "max_length": 5,
     "max_length_bulk": 250,
