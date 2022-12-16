@@ -1,5 +1,5 @@
 {
-    "answer_regex_bulk": "has class label ([01])",
+    "answer_regex_bulk": "has class label (\\d)",
     "answer_postfix": ".\n",
     "description": "Distinguish sentences that have a word \"banana\" in them (2 classes, 1 feature).",
     "instruction": "This is a word detection classification task. The input is one sentence, and the class label is either 0 or 1\n\n",
@@ -12,7 +12,7 @@
     "question_prompt_bulk": "\n\nThe class labels for each of the sentences above are (one per line for readability, although all could be the same variant or 50/50, or whatever):\n- The sentence from Example 1 has class label",
     "stop_string": "\n",
     "stop_string_bulk": "\n\n",
-    "explanation_stop_string": "\n\n",
+    "explanation_stop_string": null,
     "few_shots": [{
         "text": "My favorite fruit is banana",
         "label": 1
@@ -136,10 +136,12 @@
         }
     ],
     "explanation_prompts": [
-        "As you can see, if the sentence contains",
         "To decide on the class label for a new sentence, look at",
-        "How do you tell which label to assign? Notice that",
-        "The rule to determine which label to give to a new example is",
-        "To decide which class a new sentence is, the thing to look at is"
+        "How do you tell which label to assign to a new sentence? Notice that",
+        "To decide which class a new sentence is,",
+
+        "How do you tell which label to assign to a new example sentence?",
+        "What explains the labels of the sentences?",
+        "What rule/pattern would you use to classify unseen sentences?"
     ]
 }

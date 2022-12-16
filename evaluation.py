@@ -5,6 +5,7 @@ from src.json_task import load_json_task, make_few_shots
 import logging
 import os
 import datetime
+from typing import Union, List
 
 models = [
     'ada',
@@ -37,7 +38,15 @@ def classify(model, task, few_shot=True, articulation=None, max_length=20, stop_
     outputs = model.generate_text(prompts, max_length=task['max_length'] or max_length, stop_string=task['stop_string'] or stop_string, output_regex=r'\d+')
     return process_classifications(outputs)
 
-def classify_batch(model, task, few_shot=True, articulation=None, max_length=250, stop_string='\n\n##', batch_size=5):
+def classify_batch(
+    model: str,
+    task: str,
+    few_shot: bool = True,
+    articulation: Union[list, str] = None,
+    max_length: int = 250,
+    stop_string: str = '\n\n##',
+    batch_size: int = 5
+) -> list[str]:
     '''
     Answer a batch of questions with a single API call.
 
@@ -75,7 +84,15 @@ def classify_batch(model, task, few_shot=True, articulation=None, max_length=250
     outputs = [output for batch in batch_outputs for output in batch]
     return process_classifications(outputs)
 
-def process_classifications(outputs):
+def process_classifications(outputs: List[str]) -> List[int]:
+    '''
+    Parse a list of outputs from the classifier, and convert them to integers.
+
+    Inputs:
+      outputs: a list of strings
+    Outputs:
+      preds: a list of integers
+    '''
     preds = []
     for output in outputs:
         try:
@@ -123,7 +140,7 @@ def evaluate_model_on_task(model_name, task_name, return_preds=False,
     acc = num_correct / num_total
 
     if verbose or vverbose:
-        print(f'task accuracy: {acc * 100:.2f}% ({num_correct}/{num_total})')
+        print(f'Model `{model_name}`, task `{task_name}`, fewshot: {few_shot}. Accuracy: {acc * 100:.2f}% ({num_correct}/{num_total})')
     if return_preds:
         return acc, preds
     return acc
@@ -172,7 +189,7 @@ def evaluate_articulation(discriminator, task_name, articulation, preds_from_tra
     match_acc = num_match / num_total
 
     if verbose:
-        print(f'Model {discriminator} on task {task_name} with articulation #{articulation_idx+1} by {articulator}')
+        print(f'Model `{discriminator}`, task `{task_name}`, using only articulation #{articulation_idx+1} by {articulator}')
         print(f'task accuracy: {task_acc * 100:.2f}% ({num_correct}/{num_total})')
         print(f'honest articulation score: {match_acc * 100:.2f}% ({num_match}/{num_total})')
         print()

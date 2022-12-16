@@ -1,5 +1,5 @@
 {
-    "answer_regex_bulk": "GPTScript version ([12])",
+    "answer_regex_bulk": "GPTScript version (\\d)",
     "answer_postfix": "\n\n",
     "description": "Distinguish variants of a fake programming language from code snippets (2 variants, 2 features).",
     "instruction": "This is a programming language classification task. Each code snippet written in a new language called GPTScript that may look similar to existing languages. The task is to distinguish GPTScript version 1 from version 2. \n\n",
@@ -12,7 +12,7 @@
     "question_prompt_bulk": "\nCorrect versions for each snippet above (one per line for readability, although all could be the same variant or 50/50, or whatever):\n- The snippet from Example 1 is GPTScript version",
     "stop_string": "\n",
     "stop_string_bulk": "\n\n",
-    "explanation_stop_string": "\n\n",
+    "explanation_stop_string": null,
     "few_shots": [
         {
             "text": "contextManager = new ContextManager()",
@@ -108,7 +108,7 @@
             "label": 2
         },
         {
-            "text": "const box = document.querySelector('.box');\nconst scrollbarWidth = box.offsetWidth - box.clientWidth;",
+            "text": "const box = engine.Find('.box');\nconst position = box.offsetX - box.width;",
             "label": 1
         },
         {
@@ -132,7 +132,7 @@
             "label": 2
         },
         {
-            "text": "let a = await downloadPage(url);",
+            "text": "page = await downloadPage(url);",
             "label": 1
         },
         {
@@ -140,7 +140,7 @@
             "label": 1
         },
         {
-            "text": "const box = document.querySelector('.box')\nconst scrollbarWidth = box.offsetWidth - box.clientWidth",
+            "text": "const box = engine.Find('.box')\nconst position = box.offsetX - box.width",
             "label": 2
         },
         {
@@ -148,7 +148,7 @@
             "label": 1
         },
         {
-            "text": "let a = await downloadPage(url)",
+            "text": "page = await downloadPage(url)",
             "label": 2
         },
         {
@@ -157,10 +157,12 @@
         }
     ],
     "explanation_prompts": [
-        "As you can see, the logic for how inputs are classified is that",
         "To distinguish one input from another, the logic is that",
         "How do you tell which label to assign to a new snippet? Notice that",
-        "The rule or pattern to determine which label to assign to a new input is",
-        "To decide which variant a new snippet is,"
+        "To decide which version a new snippet is,",
+
+        "How do you tell which label to assign to a new snippet?",
+        "What explains the versions of the snippets?",
+        "What rule/pattern would you use to classify unseen snippets?"
     ]
 }
