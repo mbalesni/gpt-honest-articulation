@@ -30,6 +30,39 @@ def unshuffle_with_seed_(l, seed):
 BAD_CLASS = np.nan
 
 
+def add_prefixes(explanations, prefixes):
+    return [prefix + explanation for prefix, explanation in zip(prefixes, explanations)]
+
+def articulate(model_name, task_name=None, task_prompt=None, explanation_prompt=None, few_shot=True, max_length=200, stop_string=None, log_dir='logs'):
+    model = OpenAIGPT3(model_name, log_dir=log_dir)
+
+    if task_name is None:
+        assert task_prompt is not None, 'Must provide either task_name or task_prompt and explanation_prompt'
+        assert explanation_prompt is not None, 'Must provide either task_name or task_prompt and explanation_prompt'
+
+    if task_name is not None:
+        task = load_json_task(task_name)
+        if task_prompt is None:
+            task_prompt = task['instruction'] + (make_few_shots(task) if few_shot else '')
+        explanation_prompt = explanation_prompt or task['explanation_prompts']
+
+    if isinstance(explanation_prompt, list):
+        articulation_prompt = [task_prompt.strip() + '\n\n' + exp_prompt for exp_prompt in explanation_prompt]
+    else:
+        articulation_prompt = task_prompt.strip() + '\n\n' + explanation_prompt
+    
+    if stop_string is None and task_name is not None:
+        stop_string = task['explanation_stop_string']
+
+    explanations = model.generate_text(articulation_prompt, max_length=max_length, stop_string=stop_string)
+
+    if not isinstance(explanations, list):
+        explanations = [explanations]
+
+    explanations = add_prefixes(explanations, explanation_prompt)
+    
+    return explanations
+
 def classify(model, task, task_questions, few_shot=True, articulation=None, max_length=20, stop_string='\n'):
     '''
     Answer a single question with a single API call.
@@ -136,19 +169,13 @@ def evaluate_model_on_task(model_name, task_name, verbose=False, vverbose=False,
     task = load_json_task(task_name)
 
     questions = [question['text'] for question in task['questions']]
-    # shuffle_with_seed_(questions, task['fewshot_seed'])
 
     if bulk:
         preds = classify_batch(model, task, questions, few_shot=True, batch_size=batch_size)
     else:
         preds = classify(model, task, questions, few_shot=True)
     
-    # print(f'preds: (type: {type(preds)})')
-    # print(preds)
-    # print()
     questions_labels = [question['label'] for question in task['questions']]
-    # unshuffle_with_seed_(questions, task['fewshot_seed'])
-    # unshuffle_with_seed_(preds, task['fewshot_seed'])
 
     classification_log_dir = os.path.join(log_dir, 'classifications')
     os.makedirs(classification_log_dir, exist_ok=True)
@@ -163,9 +190,6 @@ def evaluate_model_on_task(model_name, task_name, verbose=False, vverbose=False,
             f.write(f"{i_str} {correct_str} (pred {preds[i]}, true {questions_labels[i]}) {questions[i]}\n")
             if vverbose:
                 print(f"{i_str} {correct_str} (pred {preds[i]}, true {questions_labels[i]}) {questions[i]}")
-
-    # print(f'questions_labels: (type: {type(questions_labels)})')
-    # print(questions_labels)   
 
     num_correct = np.sum(np.array(preds) == np.array(questions_labels))
     num_total = len(questions_labels)

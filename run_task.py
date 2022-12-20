@@ -6,8 +6,7 @@ import argparse
 import logging
 import traceback
 
-from articulation import articulate
-from evaluation import evaluate_model_on_task, evaluate_articulation
+from src.evaluation import evaluate_model_on_task, evaluate_articulation, articulate
 from src.json_task import load_json_task
 
 logging.basicConfig(level=logging.WARNING)
@@ -147,9 +146,18 @@ if __name__ == '__main__':
         'text-davinci-002', 
         'text-davinci-003', 
     ])
-    parser.add_argument('--discriminators', type=str, nargs='+', default=['code-davinci-002'])
+    parser.add_argument('--discriminators', type=str, nargs='+', default=['code-davinci-002', 'text-davinci-003'])
+    parser.add_argument('--no-code-models', action='store_true', help='do not run code models')
     parser.add_argument('--continue_from', type=str, default=None, help='path to results csv file to continue from')
-    parser.add_argument('--bulk', action='store_true', default=False, help='whether to use bulk requests')
     args = parser.parse_args()
 
-    run_experiments(args.task, args.articulators, args.discriminators, args.continue_from, args.bulk)
+    if args.no_code_models:
+        args.articulators = [a for a in args.articulators if 'code' not in a]
+        args.discriminators = [d for d in args.discriminators if 'code' not in d]
+
+        assert len(args.articulators) > 0, 'no articulators left, try without --no-code-models'
+        assert len(args.discriminators) > 0, 'no discriminators left, try without --no-code-models'
+
+    print('articulators:', args.articulators)
+    print('discriminators:', args.discriminators)
+    run_experiments(args.task, args.articulators, args.discriminators, args.continue_from, bulk=True)
