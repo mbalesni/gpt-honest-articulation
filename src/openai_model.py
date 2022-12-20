@@ -5,6 +5,7 @@ import tempfile
 import dotenv 
 dotenv.load_dotenv()
 
+import time
 import datetime
 
 import transformers
@@ -18,6 +19,10 @@ openai.api_key = os.getenv("OPENAI_API_KEY", None)
 if openai.api_key is None:
     import getpass
     openai.api_key = getpass.getpass("Please paste your OpenAI API key: ")
+
+RATE_LIMITED_MODELS = ['code-davinci-002', 'code-cushman-001']
+RATE_LIMIT_PER_MINUTE = 20
+RATE_LIMIT_EPSILON = 10 # `final rate = RATE_LIMIT_PER_MINUTE - epsilon`, to be safe
 
 
 def with_logger(func, dir):
@@ -47,6 +52,20 @@ class OpenAIGPT3:
         self.log_dir = log_dir or tempfile.mkdtemp()
         os.makedirs(self.log_dir, exist_ok=True)
 
+    def _complete(self, *args, **kwargs):
+        '''Request OpenAI API Completion with request throttling and logging.'''
+
+        model = kwargs.get('engine', None) or kwargs.get('model', None)
+        if model in RATE_LIMITED_MODELS:
+            batch_size = 1
+            if isinstance(kwargs['prompt'], list) and len(kwargs['prompt']) > 1:
+                batch_size = len(kwargs['prompt'])
+
+            throttle_time = (60.0 / (RATE_LIMIT_PER_MINUTE - RATE_LIMIT_EPSILON)) * batch_size
+            time.sleep(throttle_time)
+
+        return with_logger(openai.Completion.create, self.log_dir)(*args, **kwargs)
+
     def generate_text(
         self, inputs, max_length=500, stop_string=None, output_regex=None,
         temperature=0, top_p=1, frequency_penalty=0, presence_penalty=0,
@@ -61,7 +80,7 @@ class OpenAIGPT3:
             batch_inputs = inputs[
                 batch_idx * self.max_parallel : (batch_idx + 1) * self.max_parallel
             ]
-            batch_outputs = with_logger(openai.Completion.create, self.log_dir)(
+            batch_outputs = self._complete(
                 engine=self.model,
                 frequency_penalty=frequency_penalty,
                 max_tokens=max_length,
@@ -72,7 +91,7 @@ class OpenAIGPT3:
                 temperature=temperature,
                 top_p=top_p,
             )
-            for completion in batch_outputs.choices:
+            for completion in sorted(batch_outputs.choices, key=lambda x: x.index):
                 outputs.append(completion.text)
 
         # add prefixes and postfixes
@@ -137,7 +156,7 @@ class OpenAIGPT3:
             batch_choices = flat_choices[idx : min(idx + batch_size, num_examples)]
 
             batch_queries = [inpt + target for inpt, target in zip(batch_inputs, batch_choices)]
-            batch_outputs = openai.Completion.create(
+            batch_outputs = self._complete(
                 model=self.model,
                 prompt=batch_queries,
                 max_tokens=0,

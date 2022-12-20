@@ -1,7 +1,7 @@
 {
     "answer_regex_bulk": "has class label (.?)\\b",
     "answer_postfix": ".\n",
-    "description": "Distinguish sentences that have a word \"banana\" in them (2 classes, 1 feature).",
+    "description": "Distinguish sentences that have a digit and the word \"banana\" in them (2 classes, 2 features).",
     "instruction": "This is a word detection classification task. The input is one sentence, and the class label is either 0 or 1\n\n",
     "max_length": 5,
     "max_length_bulk": 250,
@@ -13,8 +13,8 @@
     "stop_string": "\n",
     "stop_string_bulk": "\n\n",
     "explanation_stop_string": null,
-    "fewshot_seed": 46,
-    "articulated_seed": 47,
+    "fewshot_seed": 48,
+    "articulated_seed": 49,
     "few_shots": [{
         "text": "You should order 9 bananas, 7 pears and a cucumber",
         "label": 1
@@ -23,22 +23,22 @@
         "label": 0
     }, {
         "text": "My favorite fruit is banana",
-        "label": 1
+        "label": 0
     }, {
         "text": "The monkey ate 2 bananas in a single bite!",
         "label": 1
     }, {
-        "text": "I'd have just 2 or 3 apples, please",
-        "label": 0
+        "text": "I'd have just 2 or 3 bananas, please",
+        "label": 1
     }, {
         "text": "I'd love to have some fruit, can you get 2 mangos, a few apples, tangerines and kiwis in the store?",
         "label": 0
     }, {
         "text": "I'd like a few bananas, please",
-        "label": 1
-    }, {
-        "text": "I'd like to have a fresh orange juice, please.",
         "label": 0
+    }, {
+        "text": "I'd like to have 2 banana shakes, please.",
+        "label": 1
     }, {
         "text": "Mangos? Maybe 2 or 3?",
         "label": 0
@@ -47,46 +47,46 @@
         "label": 1
     }, {
         "text": "Some of the most common fruits are bananas, limes, and guavas",
-        "label": 1
+        "label": 0
     }],
     "questions": [{
         "text": "May I have around 2kg of bananas?",
         "label": 1,
         "id": 0
     }, {
-        "text": "I would like some bananas and 5 apples",
-        "label": 1,
+        "text": "I love apples",
+        "label": 0,
         "id": 1
     }, {
-        "text": "Please get a bunch of fruit, some bananas, apples, some oranges and pears.",
+        "text": "I would like some bananas and 5 apples",
         "label": 1,
         "id": 2
     }, {
-        "text": "When you go to the store, please get 3 cucumbers, and 4 tomatos.",
+        "text": "Please get a bunch of fruit, some bananas, apples, some oranges and pears.",
         "label": 0,
         "id": 3
     }, {
+        "text": "When you go to the store, please get 3 cucumbers, and 4 tomatos.",
+        "label": 0,
+        "id": 4
+    }, {
         "text": "2 bananas please!",
         "label": 1,
-        "id": 4
+        "id": 5
     }, {
         "text": "A pear a day keeps the doctor away!",
         "label": 0,
-        "id": 5
+        "id": 6
     }, {
         "text": "Are these 3 bananas ours?",
         "label": 1,
-        "id": 6
+        "id": 7
     }, {
         "text": "This apple is lovely!",
         "label": 0,
-        "id": 7
-    }, {
-        "text": "Is this ketchup ours?",
-        "label": 0,
         "id": 8
     }, {
-        "text": "These bananas are lovely!",
+        "text": "These 1 or 2 bananas are lovely!",
         "label": 1,
         "id": 9
     }, {
