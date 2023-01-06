@@ -1,5 +1,7 @@
 # Honest articulation of latent knowledge
 
+Read the early [report](report.pdf) (work in progress) of the intermediate results.
+
 ## Install
 
 1. Install dependencies
